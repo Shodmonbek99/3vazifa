@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import ProductCard from './utils/ProductCard';
 import ProductDetail from './utils/ProductDetail';
+import Navbar from './utils/Navbar';
 
 interface Products {
   limit: number;
@@ -15,11 +16,14 @@ interface Product {
   title: string;
   description: string;
   price: number;
+  thumbnail: string;
 }
 
 function App() {
   const [products, setProducts] = useState<Products | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [cart, setCart] = useState<Product[]>([]);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   useEffect(() => {
     fetch('https://dummyjson.com/products')
@@ -45,24 +49,39 @@ function App() {
     setSelectedProduct(product);
   };
 
+  const addToCart = (product: Product) => {
+    setCart([...cart, product]);
+    setSelectedProduct(null); 
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <div className="App">
+    <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
+      <Navbar toggleDarkMode={toggleDarkMode} cartItems={cart.length} />
       {selectedProduct ? (
-        <ProductDetail product={selectedProduct} setSelectedProduct={setSelectedProduct} />
+        <ProductDetail 
+          product={selectedProduct} 
+          setSelectedProduct={setSelectedProduct} 
+          addToCart={addToCart}
+        />
       ) : (
-        products && 
-          products.products.map((product: Product) => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              handleDelete={handleDelete} 
-              handleCardClick={handleCardClick} 
-            />
-          ))
+        <div className="product-grid">
+          {products &&
+            products.products.map((product: Product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                handleDelete={handleDelete}
+                handleCardClick={handleCardClick}
+              />
+            ))}
+        </div>
       )}
     </div>
   );
 }
 
 export default App;
-

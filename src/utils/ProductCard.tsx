@@ -5,6 +5,7 @@ interface Product {
   title: string;
   description: string;
   price: number;
+  thumbnail: string;
 }
 
 interface ProductCardProps {
@@ -15,12 +16,12 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, handleDelete, handleCardClick }) => {
   return (
-    <div className="ProductCard" onClick={() => handleCardClick(product)}>
+    <div className="card" onClick={() => handleCardClick(product)}>
+      <img src={product.thumbnail} alt={product.title} className="card-image" />
       <h2>{product.title}</h2>
-      <button onClick={(e) => {
-        e.stopPropagation(); 
-        handleDelete(product.id);
-      }}>Delete</button>
+      <p>{product.description}</p>
+      <p>${product.price}</p>
+      <button className="btn btn-primary" onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }}>Delete</button>
     </div>
   );
 };
